@@ -192,6 +192,8 @@ class APIcli {
 	{
 		$card = new Card($this->db);
 		print_r($this->db);
+		$ids = $this->db->get_ids();
+		print_r($ids);
 		foreach ($this->db->get_ids() as $id)
 		{
 			$card->load_by_id($id);
@@ -204,8 +206,10 @@ class Controller {
 	protected $api;
 	protected $db;
 	
-	function __construct ()
+	function __construct ($db)
 	{
+		$this->db = $db;	
+	
 		#cli
 		if (defined('STDIN'))
 		{
