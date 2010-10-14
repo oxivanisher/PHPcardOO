@@ -34,24 +34,6 @@ class Card {
     $this->email = "";
   }
 
-  function show()
-  {
-    echo $this->id.":\t".$this->surname." ".$this->firstname;
-	if ($this->firm)
-		echo ", ".$this->firm;
-    if ($this->email)
-	    echo ", ".$this->email;
-	if (($this->mobilep) OR ($this->workp) OR ($this->privatep))
-    	echo "\n\t";
-    if ($this->mobilep)
-	    echo "M:".$this->mobilep." ";
-    if ($this->workp)
-	    echo "W:".$this->workp." ";
-    if ($this->privatep)
-	    echo "P:".$this->privatep." ";
-    echo "\n";
-  }
-
   function create()
   {
     $this->db->query(sprintf("INSERT INTO card (firstname, surname, firm, mobilep, workp, privatep, email) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s' );",
@@ -76,19 +58,6 @@ class Card {
 	function delete()
 	{
 		$this->db->query(sprintf("DELETE FROM card WHERE rowid='%d';", $this->id));
-	}
-
-	function show_detail()
-	{
-		echo "ID:            ".$this->id;
-		echo "Firstname:     ".$this->firstname;
-		echo "Surname:       ".$this->surname;
-		echo "Firm:          ".$this->firm;
-		echo "Mobile Phone:  ".$this->mobilep;
-		echo "Work Phone:    ".$this->workp;
-		echo "Private Phone: ".$this->privatep;
-		echo "Email:         ".$this->email;
-		echo "\n";
 	}
 }
 

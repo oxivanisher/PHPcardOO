@@ -56,6 +56,11 @@ class DB {
 					privatep LIKE '%".$needle."%' OR 
 					email LIKE '%".$needle."%';");
 	}
+	
+	function card_update($id, $field, $newvalue)
+	{
+		$this->query("UPDATE card SET ".$field."='".$newvalue."' WHERE rowid='".$id."';");
+	}
 }
 
 
