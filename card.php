@@ -14,7 +14,7 @@ class DB {
     if ($this->db = sqlite_popen($dbname, 0666, $sqliteerror))
     {
     	if ($newfile) 
-				$this->query('CREATE TABLE card (firstname varchar(100), surname varchar(100), firm varchar(100), mobile varchar(20), work varchar(20), private varchar(20), email varchar(65));');
+				$this->query('CREATE TABLE card (firstname varchar(100), surname varchar(100), firm varchar(100), mobilep varchar(20), workp varchar(20), privatep varchar(20), email varchar(65));');
     } else {
       die($sqliteerror);
     }
@@ -43,7 +43,7 @@ class DB {
 
 	function get_ids ()
 	{
-		return $this->query("SELECT rowid FROM card WHERE 1 ORDER BY surname, name ASC;");
+		return $this->query("SELECT rowid FROM card WHERE 1 ORDER BY surname, firstname ASC;");
 	}
 
 }
@@ -60,7 +60,7 @@ class Card {
 	*/
 
   public $id;
-  public $name;
+  public $firstname;
   public $surname;
   public $firm;
   public $mobilep;
@@ -73,7 +73,7 @@ class Card {
   {
     $this->db = $db;
     $this->id = -1;
-    $this->name = "";
+    $this->firstname = "";
     $this->surname = "";
     $this->firm = "";
     $this->mobilep = "";
@@ -84,7 +84,7 @@ class Card {
 
   function show()
   {
-    echo $this->id.":\t".$this->surname.", ".$this->surname.", ".$this->firm."\n";
+    echo $this->id.":\t".$this->firstname.", ".$this->surname.", ".$this->firm."\n";
     echo "\t-> ";
     if ($this->mobilep)
 	    echo "M: ".$this->mobilep." ";
@@ -100,15 +100,16 @@ class Card {
   function create()
   {
     $this->db->query(sprintf("INSERT INTO card (firstname, surname, firm, mobilep, workp, privatep, email) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s' );",
-    								 $this->name, $this->surname, $this->firm, $this->mobilep, $this->workp, $this->privatep, $this->email));
-    return $this->db->last_rowid();
+    								 $this->firstname, $this->surname, $this->firm, $this->mobilep, $this->workp, $this->privatep, $this->email));
+    $this->id = $this->db->last_rowid();
+	return $this->id;
   }
 
   function load_by_id($id)
   {
-    $result = $this->db->query(sprintf("SELECT firstname, surname, firm, mobilep, workp, privatep, email FROM card WHERE rowid='%d';", $id));
-    $this->id = $id;
-    $this->name = $result[0]['firstname'];
+    $result = $this->db->query(sprintf("SELECT rowid, firstname, surname, firm, mobilep, workp, privatep, email FROM card WHERE rowid='%d';", $id));
+    $this->id = $result[0]['rowid'];
+    $this->firstname = $result[0]['firstname'];
     $this->surname = $result[0]['surname'];
     $this->firm = $result[0]['firm'];
     $this->mobilep = $result[0]['mobilep'];
@@ -117,6 +118,10 @@ class Card {
     $this->email = $result[0]['email'];
   }
 
+	function delete()
+	{
+		$this->db->query(sprintf("DELETE FROM card WHERE rowid='%d';", $this->id));
+	}
 }
 
 class APIcli {
@@ -191,14 +196,52 @@ class APIcli {
 	function show_table()
 	{
 		$card = new Card($this->db);
-		print_r($this->db);
-		$ids = $this->db->get_ids();
-		print_r($ids);
 		foreach ($this->db->get_ids() as $id)
 		{
 			$card->load_by_id($id);
 			$card->show();
 		}
+	}
+
+	function new_entry()
+	{
+		$card = new Card($this->db);
+
+		$this->print_output("Firstname: ");
+		$card->firstname = $this->read_input();
+		
+		$this->print_output("Surname: ");
+		$card->surname = $this->read_input();
+		
+		$this->print_output("Firm: ");
+		$card->firm = $this->read_input();
+		
+		$this->print_output("Mobile Phone: ");
+		$card->mobilep = $this->read_input();
+		
+		$this->print_output("Work Phone: ");
+		$card->workp = $this->read_input();
+		
+		$this->print_output("Private Phone: ");
+		$card->phonep = $this->read_input();
+		
+		$this->print_output("Email: ");
+		$card->email = $this->read_input();
+		
+		$card->create();
+		
+		$this->print_output("Card saved.\n");
+	}
+	
+	function delete_entry ()
+	{
+		$this->print_output("Please enter ID: ");
+		$id = $this->read_input();
+		$card = new Card($this->db);
+		$card->load_by_id($id);
+		$card->delete();
+		unset ($card);
+		$this->print_output("Entry removed.");
 	}
 }
 
@@ -238,7 +281,7 @@ class Controller {
 			elseif ($input == "new_entry")
 			{
 				$this->api->print_output("\n-> New Entry:\n");
-				true;
+				$this->api->new_entry();
 			}
 			elseif ($input == "search")
 			{
@@ -253,7 +296,7 @@ class Controller {
 			elseif ($input == "delete_entry")
 			{
 				$this->api->print_output("\n-> Delete Entry:\n");
-				true;
+				$this->api->delete_entry();
 			}
 			else
 				$this->api->print_output("Invalid selecion: ".$input."\n");
