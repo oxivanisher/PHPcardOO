@@ -43,7 +43,7 @@ class DB {
 
 	function get_ids ()
 	{
-		return $this->query("SELECT rowid FROM card WHERE 1 ORDER BY surname, firstname ASC;");
+		return $this->query("SELECT rowid FROM card WHERE 1 ORDER BY surname ASC, firstname ASC;");
 	}
 
 }
@@ -84,7 +84,9 @@ class Card {
 
   function show()
   {
-    echo $this->id.":\t".$this->firstname.", ".$this->surname.", ".$this->firm."\n";
+    echo $this->id.":\t".$this->surname." ".$this->firstname;
+	if ($this->firm)
+		echo ", ".$this->firm."\n";
     echo "\t-> ";
     if ($this->mobilep)
 	    echo "M: ".$this->mobilep." ";
@@ -195,10 +197,11 @@ class APIcli {
 	
 	function show_table()
 	{
+		$this->print_output("\n");
 		$card = new Card($this->db);
-		foreach ($this->db->get_ids() as $id)
+		foreach ($this->db->get_ids() as $cardIds)
 		{
-			$card->load_by_id($id);
+			$card->load_by_id($cardIds[rowid]);
 			$card->show();
 		}
 	}
@@ -223,7 +226,7 @@ class APIcli {
 		$card->workp = $this->read_input();
 		
 		$this->print_output("Private Phone: ");
-		$card->phonep = $this->read_input();
+		$card->privatep = $this->read_input();
 		
 		$this->print_output("Email: ");
 		$card->email = $this->read_input();
@@ -274,34 +277,35 @@ class Controller {
 				$loop = false;
 			elseif ($input == "show_table")
 			{
-				$this->api->print_output("\n-> Show Table:\n");
+				$this->api->print_output("-> Show Table:\n");
 				$this->api->show_table();
-				true;
+				$this->api->print_output("\n");
 			}
 			elseif ($input == "new_entry")
 			{
-				$this->api->print_output("\n-> New Entry:\n");
+				$this->api->print_output("-> New Entry:\n");
 				$this->api->new_entry();
+				$this->api->print_output("\n");
 			}
 			elseif ($input == "search")
 			{
-				$this->api->print_output("\n-> Search:\n");
+				$this->api->print_output("-> Search:\n");
 				true;
 			}
 			elseif ($input == "show_entry")
 			{
-				$this->api->print_output("\n-> Show Entry:\n");
+				$this->api->print_output("-> Show Entry:\n");
 				true;
+				$this->api->print_output("\n");
 			}
 			elseif ($input == "delete_entry")
 			{
-				$this->api->print_output("\n-> Delete Entry:\n");
+				$this->api->print_output("-> Delete Entry:\n");
 				$this->api->delete_entry();
+				$this->api->print_output("\n");
 			}
 			else
-				$this->api->print_output("Invalid selecion: ".$input."\n");
-				
-			
+				$this->api->print_output("Invalid selecion: ".$input."\n");	
 		}
 	}
 }
@@ -325,18 +329,6 @@ function main()
   	$card2 = new Card($db);
   	$card2->show();
 	*/	
-
-/*
-To detect if run from CLI:
-
-if (defined('STDIN'))
-
-or:
-
-if (isset($argc))
-*/
-
-
 }
 
 main();
