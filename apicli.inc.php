@@ -70,11 +70,14 @@ class APIcli {
 		$needle = $this->read_input();
 		if ($needle) {
 			$card = new Card($this->db);
+			$count = 0;
 			foreach ($this->db->search_card($needle) as $cardIds)
 			{
 				$card->load_by_id($cardIds[rowid]);
 				$card->show();
+				$count++;
 			}
+			$this->print_output("Results found: ".$count);
 		}
 		else
 		{

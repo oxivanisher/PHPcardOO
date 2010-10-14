@@ -47,15 +47,14 @@ class DB {
 	
 	function search_card($needle)
 	{
-		return $this->query(sprintf("SELECT rowid FROM card WHERE
-					firstname LIKE '%%s%' OR 
-					surname LIKE '%%s%' OR 
-					firm LIKE '%%s%' OR 
-					mobilep LIKE '%%s%' OR 
-					workp LIKE '%%s%' OR 
-					privatep LIKE '%%s%' OR 
-					email LIKE '%%s%' 
-					", $needle, $needle, $needle, $needle, $needle, $needle, $needle));
+		return $this->query("SELECT rowid FROM card WHERE
+					firstname LIKE '%".$needle."%' OR 
+					surname LIKE '%".$needle."%' OR 
+					firm LIKE '%".$needle."%' OR 
+					mobilep LIKE '%".$needle."%' OR 
+					workp LIKE '%".$needle."%' OR 
+					privatep LIKE '%".$needle."%' OR 
+					email LIKE '%".$needle."%';");
 	}
 }
 
