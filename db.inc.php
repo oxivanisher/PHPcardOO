@@ -10,7 +10,7 @@ class DB {
     } else {
     	$newfile = false;
     }
-    if ($this->db = sqlite_popen($dbname, 0666, $sqliteerror))
+    if ($this->db = sqlite_popen($dbname, 0777, $sqliteerror))
     {
     	if ($newfile) 
 				$this->query('CREATE TABLE card (firstname varchar(100), surname varchar(100), firm varchar(100), mobilep varchar(20), workp varchar(20), privatep varchar(20), email varchar(65));');

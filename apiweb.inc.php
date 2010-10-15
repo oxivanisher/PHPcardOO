@@ -8,16 +8,9 @@ class APIweb {
 		c = command:
 				show_table
 				new_entry
-				search
-				show_entry
 				edit_entry
 				delete_entry
-	
-	
-	
-		INTERNAL CONTROL VARs
-		$this->state -> view, do -> $_SESSION['state']
-	
+
 	*/
 
 	function __construct($db)
@@ -44,11 +37,9 @@ class APIweb {
 		}
 		else
 		{
-			import_request_variables("gp", "webreq_");
-			return $webreq_c;
+			return $_POST['c'];
 		}
 	}
-
 
 	function print_error($text)
 	{
@@ -113,6 +104,46 @@ class APIweb {
 		$this->show_table();
 	}
 
+	function delete_entry ()
+	{
+		$card = new Card($this->db);
+		$card->load_by_id((integer) $_POST['id']);
+		$card->delete();
+		unset ($card);
+		$this->show_table();
+	}
+  
+  function edit_entry ()
+  {
+		$card = new Card($this->db);
+		$card->load_by_id((integer) $_POST['id']);
+		
+		if ($card->firstname != $_POST['firstname'])
+			$this->db->card_update($_POST['id'] , "firstname", $_POST['firstname']);
+			
+		if ($card->surname != $_POST['surname'])
+			$this->db->card_update($_POST['id'] , "surname", $_POST['surname']);
+
+		if ($card->firm != $_POST['firm'])
+			$this->db->card_update($_POST['id'] , "firm", $_POST['firm']);
+
+		if ($card->mobilep != $_POST['mobilep'])
+			$this->db->card_update($_POST['id'] , "mobilep", $_POST['mobilep']);
+
+		if ($card->workp != $_POST['workp'])
+			$this->db->card_update($_POST['id'] , "workp", $_POST['workp']);
+
+		if ($card->privatep != $_POST['privatep'])
+			$this->db->card_update($_POST['id'] , "privatep", $_POST['privatep']);
+
+		if ($card->email != $_POST['email'])
+			$this->db->card_update($_POST['id'] , "email", $_POST['email']);
+		
+		$this->show_table();
+  }
+  
+  /* FIXME Not yet implemented */
+  
 	function new_entry()
 	{
 		$card = new Card($this->db);
@@ -143,43 +174,6 @@ class APIweb {
 		$this->print_output("Card saved.\n");
 	}
 	
-	function delete_entry ()
-	{
-		$card = new Card($db);
-		$card->load_by_id((integer) $webreq_id);
-		$card->delete();
-		unset ($card);
-		$this->show_table();
-	}
-  
-  function edit_entry ()
-  {
-		$card = new Card($this->db);
-		$card->load_by_id((integer) $webreq_id);
-		
-		if ($card->firstname != $webreq_firstname)
-			$this->db->card_update($webreq_id , "firstname", $webreq_firstname);
-			
-		if ($card->surname != $webreq_surname)
-			$this->db->card_update($webreq_id , "surname", $webreq_surname);
-
-		if ($card->firm != $webreq_firm)
-			$this->db->card_update($webreq_id , "firm", $webreq_firm);
-
-		if ($card->mobilep != $webreq_mobilep)
-			$this->db->card_update($webreq_id , "mobilep", $webreq_mobilep);
-
-		if ($card->workp != $webreq_workp)
-			$this->db->card_update($webreq_id , "workp", $webreq_workp);
-
-		if ($card->privatep != $webreq_privatep)
-			$this->db->card_update($webreq_id , "privatep", $webreq_privatep);
-
-		if ($card->email != $webreq_email)
-			$this->db->card_update($webreq_id , "email", $webreq_email);
-		
-		$this->show_table();
-  }
 }
 
 
