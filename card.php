@@ -1,10 +1,11 @@
-#!/usr/bin/php
 <?php
 
 include("db.inc.php");
 include("card.inc.php");
 include("apicli.inc.php");
+include("apiweb.inc.php");
 include("controller.inc.php");
+include("template.inc.php");
 
 function main()
 {

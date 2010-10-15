@@ -9,12 +9,14 @@ class Controller {
 		$this->db = $db;	
 	
 		#cli
-		if (defined('STDIN'))
+		if (php_sapi_name() == "cli")
 		{
 			$this->api = new APIcli($db);
 		}
-		if (empty($this->api))
-			die("Not supported api.");
+		else
+		{
+			$this->api = new APIweb($db);
+		}
 	}
 
 	function loop ()
@@ -25,7 +27,7 @@ class Controller {
 			$input = $this->api->get_command();
 			if ($input == "exit")
 				$loop = false;
-			elseif ($input == "show_table")
+			elseif (($input == "show_table") OR ($input == ""))
 			{
 				$this->api->show_table();
 			}
